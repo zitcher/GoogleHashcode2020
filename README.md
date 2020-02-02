@@ -1,0 +1,2 @@
+# GoogleHashcode2020
+GoogleHashcode2020 competition
