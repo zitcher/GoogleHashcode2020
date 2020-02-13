@@ -6,6 +6,7 @@ import (
 	"log"
 	"strconv"
 	"os"
+	"sort"
 )
 
 func solutionToString(path []int) string {
@@ -15,11 +16,11 @@ func solutionToString(path []int) string {
 	return sol
 }
 
-func sumList(arr []int) int{
+func sumList(arr []int, arr2 []int) int{
 	sum := 0
 
     for i := range arr {
-        sum += arr[i]
+        sum += arr2[arr[i]]
     }
 
 	return sum
@@ -201,19 +202,121 @@ func SolvePizza(input string) (string, error) {
 	// solutionValue := solutionTable[numPizzas-1][maxSlices]
 	//path, _ := tracePath(solutionTable, numPizzas-1, maxSlices, pizzas)
 
-	path, solutionValue := treeSearchSolution(numPizzas, maxSlices + 1, pizzas)
-	// sumPath := sumList(path)
+	path := buildSolutionExtraMemEfficient(maxSlices, pizzas)
+	sumPath := sumList(path, pizzas)
 	// if (sumPath != solutionValue) {
 	// 	err := fmt.Errorf("sum of list %d not equal to solution %d", sumPath, solutionValue)
 	// 	log.Fatal(err)
 	// }
 
 	// fmt.Printf("%#v\n", solutionTable)
-	fmt.Printf("%#v\n", solutionValue)
+	// fmt.Printf("%#v\n", solutionValue)
 	// fmt.Printf("%#v\n", pizzas)
-	// fmt.Printf("%#v\n", path)
+	fmt.Printf("%v\n", sumPath)
 	sol := solutionToString(path)
 	// fmt.Printf("%s\n", sol)
 
 	return sol, nil
+}
+
+
+func buildSolutionExtraMemEfficient(maxSlices int, pizzas []int) (path []int) {
+	// row - pizzas
+	// column - maxslices
+	greatestGroup := 0
+	solutionMap := make(map[int][]int)
+	solutionList := make([]int, 0)
+	solutionList = append(solutionList, 0)
+	maxLen := 1000
+	radius := 1000
+
+
+	fmt.Printf("maxSlices: %v\n", maxSlices)
+	solutionMap[0] = make([]int, 0)
+
+
+
+	for i := 0; i < len(pizzas); i++ {
+		fmt.Printf("prog: %f %v %v\n", float64(i) / float64(len(pizzas)), len(solutionMap), len(solutionList))
+		pizza := pizzas[i]
+		if pizza > maxSlices {
+			continue
+		}
+
+		if pizza == maxSlices {
+			return []int{i}
+		}
+
+ 		temp := make([]int, len(solutionList))
+		copy(temp, solutionList)
+		for j := 0; j < len(solutionList); j++ {
+			if order, ok := solutionMap[solutionList[j]]; ok {
+				if solutionList[j] + pizza > maxSlices {
+					continue
+				}
+				if _, ok := solutionMap[solutionList[j] + pizza]; ok {
+					continue
+				}
+
+				if within(temp, solutionList[j] + pizza, radius) {
+					continue
+				}
+
+				cp := make([]int, len(order))
+				copy(cp, order)
+				solutionMap[solutionList[j] + pizza] = append(cp, i)
+
+				temp = insertSort(temp, solutionList[j] + pizza)
+				if solutionList[j] + pizza > greatestGroup {
+					greatestGroup = solutionList[j] + pizza
+				}
+			}
+		}
+		solutionList = temp
+
+		if len(solutionList) > maxLen {
+			for k := 0; k < len(solutionList) - maxLen; k++ {
+				delete(solutionMap, solutionList[k])
+			}
+			solutionList = solutionList[len(solutionList) - maxLen:]
+		}
+	}
+
+
+	// fmt.Printf("%#v\n", solutionTable)
+	// fmt.Printf("%#v\n", paths[curRow][maxSlices - 1])
+
+	if order, ok := solutionMap[greatestGroup]; ok {
+		return order
+	}
+	return make([]int, 0)
+}
+
+func min(a int, b int) int {
+	if a > b {
+		return b
+	}
+	return a
+}
+
+
+
+func insertSort(data []int, el int) []int {
+	index := sort.Search(len(data), func(i int) bool { return data[i] > el })
+	data = append(data, 0)
+	copy(data[index+1:], data[index:])
+	data[index] = el
+	return data
+}
+
+func within(data []int, el int, radius int) bool {
+	index := sort.SearchInts(data, el)
+	if index == 0 {
+		return data[index] - el < radius
+	}
+	if index == len(data) {
+		return el - data[index - 1] < radius
+	}
+
+	return data[index] - el < radius && el - data[index - 1] < radius
 }
