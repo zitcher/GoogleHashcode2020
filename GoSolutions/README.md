@@ -2,6 +2,9 @@
 
 # Commands
 
+## Qual
+go run main.go qual pizza/a_example.in pizza/a_example.out
+
 ## Pizza
 go run main.go pizza pizza/a_example.in pizza/a_example.out
 

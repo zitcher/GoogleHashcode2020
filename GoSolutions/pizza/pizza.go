@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"os"
 	"sort"
+	"time"
+	"math/rand"
 )
 
 func solutionToString(path []int) string {
@@ -170,7 +172,7 @@ func buildSolutionMemEfficient(numPizzas int, maxSlices int, pizzas []int) (path
 }
 
 /*
-SolvePizza solves the hashcode pizza problem when given a path to the data
+SolvePizza solves the hashcode pizza problem
 */
 func SolvePizza(input string) (string, error) {
 	inputSplit := strings.Split(input, "\n")
@@ -202,7 +204,7 @@ func SolvePizza(input string) (string, error) {
 	// solutionValue := solutionTable[numPizzas-1][maxSlices]
 	//path, _ := tracePath(solutionTable, numPizzas-1, maxSlices, pizzas)
 
-	path := buildSolutionExtraMemEfficient(maxSlices, pizzas)
+	path := randomAttack(maxSlices, pizzas)
 	sumPath := sumList(path, pizzas)
 	// if (sumPath != solutionValue) {
 	// 	err := fmt.Errorf("sum of list %d not equal to solution %d", sumPath, solutionValue)
@@ -219,31 +221,81 @@ func SolvePizza(input string) (string, error) {
 	return sol, nil
 }
 
+func makeRange(min, max int) []int {
+    a := make([]int, max-min+1)
+    for i := range a {
+        a[i] = min + i
+    }
+    return a
+}
 
-func buildSolutionExtraMemEfficient(maxSlices int, pizzas []int) (path []int) {
+func randomAttack(maxSlices int, pizzas []int) []int {
+	rand.Seed(time.Now().UnixNano())
+	indices := makeRange(0, len(pizzas) - 1)
+
+	bestSolution := make([]int, 0)
+	bestSlices := 0
+
+	stop := 10000000
+	for i := 0; i < stop; i++ {
+		fmt.Printf("prog: %f %v\n", float64(i) / float64(stop), bestSlices)
+		shuffle := make([]int, len(indices))
+		copy(shuffle, indices)
+		rand.Shuffle(len(shuffle), func(i, j int) { shuffle[i], shuffle[j] = shuffle[j], shuffle[i] })
+
+		testSolution := make([]int, 0)
+		sum := 0
+		for j := 0; j < len(shuffle); j++ {
+			index := shuffle[j]
+			pizza := pizzas[index]
+			if sum + pizza > maxSlices {
+				break
+			}
+
+			testSolution = append(testSolution, index)
+			sum += pizza
+		}
+
+		if sum > bestSlices {
+			bestSolution = testSolution
+			bestSlices = sum
+		}
+
+		if sum == maxSlices {
+			break
+		}
+	}
+	return bestSolution
+}
+
+func buildSolutionExtraMemEfficient(maxSlices int, pizzas []int) []int {
 	// row - pizzas
 	// column - maxslices
 	greatestGroup := 0
+	// maps values to list of indices
 	solutionMap := make(map[int][]int)
+
+	// list of max values
 	solutionList := make([]int, 0)
+
+	// intialize variables
 	solutionList = append(solutionList, 0)
-	maxLen := 25000
-	radius := 200
-
-
-	fmt.Printf("maxSlices: %v\n", maxSlices)
 	solutionMap[0] = make([]int, 0)
+	maxLen := 25000
+	radius := getRadius(pizzas, maxLen) // 200
 
-
+	fmt.Printf("radius: %v\n", radius)
 
 	for i := 0; i < len(pizzas); i++ {
 		fmt.Printf("prog: %f %v %v\n", float64(i) / float64(len(pizzas)), len(solutionMap), len(solutionList))
 		pizza := pizzas[i]
 		if pizza > maxSlices {
+			// fmt.Printf("%s %v %v\n", "Pizza greater than maxSlices", pizza, maxSlices)
 			continue
 		}
 
 		if pizza == maxSlices {
+			// fmt.Printf("%s %v %v\n", "Pizza equal maxSlices", pizza, maxSlices)
 			return []int{i}
 		}
 
@@ -251,14 +303,21 @@ func buildSolutionExtraMemEfficient(maxSlices int, pizzas []int) (path []int) {
 		copy(temp, solutionList)
 		for j := 0; j < len(solutionList); j++ {
 			if order, ok := solutionMap[solutionList[j]]; ok {
+				// skip if greater than max slices
 				if solutionList[j] + pizza > maxSlices {
-					continue
-				}
-				if _, ok := solutionMap[solutionList[j] + pizza]; ok {
+					// fmt.Printf("%s %v %v %v\n", "solutionList greater than max", solutionList[j], pizza, maxSlices)
 					continue
 				}
 
+				// skip if already exists
+				if _, ok := solutionMap[solutionList[j] + pizza]; ok {
+					// fmt.Printf("%s %v %v\n", "solution alread exists than max", solutionList[j], pizza)
+					continue
+				}
+
+				// skipt if items within radius
 				if within(temp, solutionList[j] + pizza, radius) {
+					// fmt.Printf("%s %v %v %v\n", "solution within radius", solutionList[j], pizza, radius)
 					continue
 				}
 
@@ -283,9 +342,6 @@ func buildSolutionExtraMemEfficient(maxSlices int, pizzas []int) (path []int) {
 	}
 
 
-	// fmt.Printf("%#v\n", solutionTable)
-	// fmt.Printf("%#v\n", paths[curRow][maxSlices - 1])
-
 	if order, ok := solutionMap[greatestGroup]; ok {
 		return order
 	}
@@ -307,6 +363,15 @@ func insertSort(data []int, el int) []int {
 	copy(data[index+1:], data[index:])
 	data[index] = el
 	return data
+}
+
+func getRadius(pizzas []int, maxLen int) int{
+	total := 0
+	for i := 0; i < len(pizzas); i++ {
+		total += pizzas[i]
+	}
+
+	return int(min(total / maxLen, 200))
 }
 
 func within(data []int, el int, radius int) bool {
