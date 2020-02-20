@@ -227,8 +227,8 @@ func buildSolutionExtraMemEfficient(maxSlices int, pizzas []int) (path []int) {
 	solutionMap := make(map[int][]int)
 	solutionList := make([]int, 0)
 	solutionList = append(solutionList, 0)
-	maxLen := 1000
-	radius := 1000
+	maxLen := 25000
+	radius := 200
 
 
 	fmt.Printf("maxSlices: %v\n", maxSlices)
