@@ -1,0 +1,1 @@
+lib qual.Library{id:1, numBooks:4, signupTime:3, shipPerDay:1, books:[]qual.Book{qual.Book{id:3, score:6}, qual.Book{id:5, score:4}, qual.Book{id:2, score:3}, qual.Book{id:0, score:1}}, scoredBooks:[]qual.Book(nil)}
