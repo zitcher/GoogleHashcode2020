@@ -11,6 +11,8 @@ US Rank: 22/619
 # Library Problem
 We recognized this problem to be a variation of the NP hard set cover problem. We used a version of the greedy appoximation algorithm for set cover to generate our solution and finished 370th place out of 10k+ teams.
 
+We believe that a far better solution could be found using linear programming and the interior point method; however, we did not have the time to write such a solution.
+
 # Pizza Problem
 
 We used dynamic programming to tackle this problem. Only 2 rows of the table are necessary for this DP problem (this saves a lot of memory).
