@@ -9,9 +9,9 @@ Global Rank: 370/10,724 <br>
 US Rank: 22/619
 
 # Library Problem
-We recognized this problem to be a variation of the NP hard set cover problem. We used a version of the greedy appoximation algorithm for set cover to generate our solution and finished 370th place out of 10k+ teams.
+We recognized this problem to be a variation of the NP hard set cover problem. We used a version of the greedy appoximation algorithm for set cover to generate our solution and finished top 5%.
 
-We believe that a far better solution (27+ million) can be found using linear programming and the interior point method; however, we did not have the time to write such a solution.
+We believe that we can improve our solution w/ linear programming and metaheuristics, but didn't have enough time to pivot during the competition.
 
 # Pizza Problem
 
