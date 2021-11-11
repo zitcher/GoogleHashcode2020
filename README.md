@@ -11,7 +11,7 @@ US Rank: 22/619
 # Library Problem
 We recognized this problem to be a variation of the NP hard set cover problem. We used a version of the greedy appoximation algorithm for set cover to generate our solution and finished top 5%.
 
-We believe that we can improve our solution w/ linear programming and metaheuristics, but didn't have enough time to pivot during the competition.
+At the time of the competition, I wasnt familiar with metaheuristics and was more familair with approximation algorithms for NP hard problems. With my current knowledge, I know now that metaheurstics would provide a far more fruitful approach to this type of problem.
 
 # Pizza Problem
 
