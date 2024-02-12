@@ -11,8 +11,6 @@ US Rank: 22/619
 # Library Problem
 We recognized this problem to be a variation of the NP hard set cover problem. We used a version of the greedy appoximation algorithm for set cover to generate our solution and finished top 5%.
 
-At the time of the competition, I wasn't familiar with metaheuristics and was more familair with approximation algorithms for NP hard problems. The higher ranked contestant undoubtedly used metaheuristics to find more optimal solutions.
-
 # Pizza Problem
 
 We used dynamic programming to tackle this problem. Only 2 rows of the table are necessary for this DP problem (this saves a lot of memory).
